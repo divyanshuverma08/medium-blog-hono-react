@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { getDB } from "../../db/db";
 import { sign } from "hono/jwt";
+import { signinInput, signupInput } from "@divyanshuverma/medium-common";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -12,6 +13,13 @@ export const userRouter = new Hono<{
 
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
+
+  const {success} = signupInput.safeParse(body);
+
+  if(!success){
+    c.status(411);
+    return c.text("Wrong Input")
+  }
 
   const prisma = c.get("prisma");
   const user = await prisma.user.create({
@@ -31,6 +39,13 @@ userRouter.post("/signup", async (c) => {
 
 userRouter.post("/signin", async (c) => {
   const body = await c.req.json();
+
+  const {success} = signinInput.safeParse(body);
+
+  if(!success){
+    c.status(411);
+    return c.text("Wrong Input")
+  }
 
   const prisma = c.get("prisma");
 

@@ -15,7 +15,7 @@ export const apiV1Router = new Hono<{
 apiV1Router.route("/user",userRouter)
 
 //Authorized Routes
-apiV1Router.use("*", jwtVerificationMiddleware);
+apiV1Router.use(jwtVerificationMiddleware);
 
 // By adding '/*', we explicitly tell Hono that blogRouter handles '/blog' and all sub-paths.
 apiV1Router.route("/blog",blogRouter)

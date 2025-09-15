@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { getDB } from "../../db/db";
+import { createBlogInput, updateBlogInput } from "@divyanshuverma/medium-common";
 
 export const blogRouter = new Hono<{
   Bindings: {
@@ -12,6 +13,14 @@ export const blogRouter = new Hono<{
 blogRouter.post("/", async (c) => {
   const body = await c.req.json();
   const authorId = c.get("userId");
+
+  const { success } = createBlogInput.safeParse(body);
+
+  if (!success) {
+    c.status(411);
+    return c.text("Wrong Input");
+  }
+
   const prisma = c.get("prisma");
 
   const blog = await prisma.blog.create({
@@ -23,7 +32,7 @@ blogRouter.post("/", async (c) => {
   });
 
   return c.json({
-    message: "Blog is updated",
+    message: "Blog is Added",
     id: blog.id,
   });
 });
@@ -31,6 +40,14 @@ blogRouter.post("/", async (c) => {
 blogRouter.put("/:id", async (c) => {
   const id = c.req.param("id");
   const body = await c.req.json();
+
+  const { success } = updateBlogInput.safeParse(body);
+
+  if (!success) {
+    c.status(411);
+    return c.text("Wrong Input");
+  }
+
   const prisma = c.get("prisma");
 
   const blog = await prisma.blog.update({
@@ -44,7 +61,7 @@ blogRouter.put("/:id", async (c) => {
   });
 
   return c.json({
-    message: "Blog is created",
+    message: "Blog is updated",
     id: blog.id,
   });
 });
