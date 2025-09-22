@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { getDB } from "./db/db";
 import { router } from "./routes";
+import { cors } from "hono/cors";
 
 const app = new Hono<{
   Bindings: {
@@ -9,6 +10,8 @@ const app = new Hono<{
   };
   Variables: { prisma: ReturnType<typeof getDB> };
 }>();
+
+app.use("*",cors())
 
 app.use("*", async (c, next) => {
   c.set("prisma", getDB(c.env.PRISMA_DATABASE_URL));
